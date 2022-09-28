@@ -1,0 +1,67 @@
+Texture2D shaderTextures[3];
+SamplerState SampleType;
+
+cbuffer LightBuffer{
+    float4 lightColor;
+    float3 lightPosition;
+    float4 ambientColor;
+    float padding;
+};
+
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL; 
+    float3 tangent : TANGENT; 
+    float3 binormal : BINORMAL;
+    float3 viewDirection : TEXCOORD1;
+    float3 worldPosition : TEXCOORD2;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+	float4 diffuseValue;
+    float4 specularValue;
+    float3 normalValue;
+
+    float3 diffuseIntensity;
+    float3 specularIntensity;
+
+    float3 diffuse;
+    float3 specular;
+    float3 ambient;
+
+    // 입사광
+    float3 lightDirection = normalize(input.worldPosition - lightPosition);
+
+    // 법선 정보를 노말맵에서 가져옴
+    normalValue = shaderTextures[2].Sample(SampleType, input.tex).xyz;
+    normalValue = normalize(normalValue * 2.0f - 1.0f);
+    // 접선공간안의 접선벡터에 대해 월드행렬 TBN을 곱하여 월드공간으로 만들어준다. 
+    float3x3 TBN = float3x3(normalize(input.normal), normalize(input.tangent), normalize(input.binormal));
+    TBN = transpose(TBN);
+    float3 worldNormal = normalize(mul(TBN, normalValue));
+
+    // 난반사광
+    diffuseValue = shaderTextures[0].Sample(SampleType, input.tex);
+    diffuseIntensity = saturate(dot(worldNormal,-lightDirection));
+    diffuse = diffuseValue.rgb * diffuseIntensity * lightColor;
+
+    // 정반사광
+    specular = 0.0f;
+    if(diffuseIntensity.x > 0.0f){
+        specularValue = shaderTextures[1].Sample(SampleType, input.tex);
+        float3 lightReflection = normalize(reflect(lightDirection, worldNormal));
+        specularIntensity = saturate(dot(lightReflection, normalize(input.viewDirection)));
+        specularIntensity = pow(specularIntensity, 20.0f);
+        specular = specularValue.rgb * specularIntensity * lightColor;
+    }
+
+    // 주변광
+    //ambient = float3(0.05f, 0.05f, 0.05f) * diffuseValue;
+    ambient = ambientColor * diffuseValue;
+    
+
+    return float4(diffuse + specular + ambient, 1.0f);
+    //return diffuse + specular + ambient;
+
+}

@@ -1,0 +1,33 @@
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float diffuseLight : TEXCOORD1;
+    float4 diffuseColor : TEXCOORD2;
+    float4 ambientColor : TEXCOORD3;
+};
+
+float4 LightPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 albedo;
+
+    float4 diffuse;
+    float4 ambient;
+
+    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+    albedo = shaderTexture.Sample(SampleType, input.tex);
+   
+    // 간혹 음수로 계산되는 diffuse값이 주변광 효과를 주지않고 주변광 값보다 어둡게 되는 현상이 발생할 수 있으므로 diffuse의 강도가 0이상일때만 주변광 효과를 준다. 
+    if(input.diffuseLight > 0.0f){
+        diffuse = input.diffuseLight * input.diffuseColor * albedo;
+    }
+    else {
+        diffuse = input.diffuseLight * input.diffuseColor;
+    }
+    ambient = input.ambientColor * albedo;
+
+    return ambient + diffuse;
+}

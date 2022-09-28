@@ -1,0 +1,19 @@
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer TranslationBuffer { 
+    float textureTranslation; 
+};
+
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+    // 픽셀을 샘플링한 곳에서 더 이동시킨 위치로 저장한다. 
+    input.tex.x += textureTranslation; 
+    
+    return shaderTexture.Sample(SampleType, input.tex);
+
+}

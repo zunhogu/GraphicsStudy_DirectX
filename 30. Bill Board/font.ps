@@ -1,0 +1,33 @@
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer PixelBuffer{
+    float4 pixelColor;
+};
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+float4 FontPixelShader(PixelInputType input) : SV_TARGET
+{
+    // 출력할 픽셀에 해당하는 글꼴 텍스처를 가져온다.
+    // 만약 그 배경색이 검은색이면 이 값의 알파값을 0으로 만들어 글자 외의 배경은 투명하게 만들어준다.
+    // 이 색상이 검은색이 아니면 해당 픽셀을 글자의 일부분이다. 따라서 해당 픽셀은 pixelColor를 사용하여 화면에 그려준다.
+
+    float4 color; 
+    
+    color = shaderTexture.Sample(SampleType, input.tex); 
+
+    if(color.r == 0.0f) { 
+        color.a = 0.0f; 
+    }
+    else { 
+        color = color * pixelColor; 
+        color.a = 1.0f; 
+    }
+    
+    return color;
+}

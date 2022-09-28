@@ -1,0 +1,23 @@
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer TransparentBuffer { 
+    // 블렌딩 비율을 저장하기 위한 변수를 상수버퍼로 받는다. 0.0 ~ 1.0 사이의 값을 갖는다.
+    float blendAmount;
+};
+
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+	float4 textureColor;
+
+    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+    textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+    textureColor.a = blendAmount;
+
+    return textureColor;
+}

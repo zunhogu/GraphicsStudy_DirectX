@@ -1,0 +1,107 @@
+Texture2D shaderTexture : register(t0);   //  물체의 디퓨즈 맵
+Texture2D depthMapTexture : register(t1);   // 그림자맵
+Texture2D depthMapTexture2 : register(t2);
+SamplerState SampleTypeClamp : register(s0);
+SamplerState SampleTypeWrap  : register(s1);
+
+cbuffer LightBuffer2 {
+    float4 ambientColor; 
+    float4 diffuseColor;
+    float4 diffuseColor2;
+};
+
+struct PS_INPUT {
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 worldNormal : NORMAL;
+    float4 lightViewPosition : TEXCOORD1;   // 광원 시점의 정점 위치
+    float3 lightDir : TEXCOORD2;   // 월드공간 속 광원 벡터
+    float4 lightViewPosition2 : TEXCOORD3;
+    float3 lightDir2 : TEXCOORD4;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET {
+    float bias;   // 바이스값
+    float4 color;   // 최종 색깔
+    float2 projectTexCoord;;   // 그림자 맵과 샘플링할 uv좌표
+    float depthValue;   // 그림자맵에서 가져오는 그림자 깊이값
+    float lightDepthValue;   // 광원시점에서 바라본 현재 깊이값
+    float diffuseIntensity;   // 난반사광 양
+    float4 dfiffuseMapValue;   // 디퓨즈맵 값
+
+    // 그림자 맵의 부동소수점 해상도가 낮기 때문에 그림자 매핑에서 빛의 깊이와 물체의 깊이를 비교할 때 바이스 보정이 필요하다.
+    // 바이스값 설정
+    bias = 0.001f;
+
+    // 모든 픽셀에 기본 색상으로 주변광 값을 세팅한다.
+    color = ambientColor;
+
+    // 첫번째 조명
+
+    // 동차나누기를 해주고 xy좌표를 uv좌표로 변경하여 투영창에 투영될 위치를 계산해준다.
+	projectTexCoord.x =  input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+	projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+
+    // 투영된 좌표가 NDC 좌표 범위로 들어왔는지 확인해준다. 범위 안에 있다면 해당 픽셀은 조명의 시야안에 있는것이다.
+	if((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y)) {
+        // 픽셀이 조명의 시야 안에 있따면 그림자 맵에서 깊이 값을 가져온다.
+		depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
+
+        // 실제 오브젝트의 현재 깊이값을 계산한다.
+		lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+
+        // 바이스 보정을 해준다.
+		lightDepthValue = lightDepthValue - bias;
+
+        // 그림자 깊이 값과 현재 깊이값을 비교한다. 여기서 해당 픽셀에 그림자를 드리울지 말지를 결정한다.
+        // 바이스 조정때문에 현재깊이는 그림자 깊이와 같을 수는 없다. 현재깊이가 그림자 깊이보다 작다는 것은 빛이 들어온다는 것이다.
+		if(lightDepthValue < depthValue) {
+            // 디퓨즈 값을 계산한다.
+            diffuseIntensity = saturate(dot(input.worldNormal, input.lightDir));
+
+            if(diffuseIntensity > 0.0f){
+                // 최종 색을 정한다.
+				color += (diffuseColor * diffuseIntensity);
+                // 최종 색이 너무 큰값이 되지 않도록 조정한다.
+				color = saturate(color);
+            }
+        }
+    }
+
+    // 두번째 조명
+	projectTexCoord.x =  input.lightViewPosition2.x / input.lightViewPosition2.w / 2.0f + 0.5f;
+	projectTexCoord.y = -input.lightViewPosition2.y / input.lightViewPosition2.w / 2.0f + 0.5f;
+
+    // 투영된 좌표가 NDC 좌표 범위로 들어왔는지 확인해준다. 범위 안에 있다면 해당 픽셀은 조명의 시야안에 있는것이다.
+	if((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y)) {
+        // 픽셀이 조명의 시야 안에 있따면 그림자 맵에서 깊이 값을 가져온다.
+		depthValue = depthMapTexture2.Sample(SampleTypeClamp, projectTexCoord).r;
+
+        // 실제 오브젝트의 현재 깊이값을 계산한다.
+		lightDepthValue = input.lightViewPosition2.z / input.lightViewPosition2.w;
+
+        // 바이스 보정을 해준다.
+		lightDepthValue = lightDepthValue - bias;
+
+        // 그림자 깊이 값과 현재 깊이값을 비교한다. 여기서 해당 픽셀에 그림자를 드리울지 말지를 결정한다.
+        // 바이스 조정때문에 현재깊이는 그림자 깊이와 같을 수는 없다. 현재깊이가 그림자 깊이보다 작다는 것은 빛이 들어온다는 것이다.
+		if(lightDepthValue < depthValue) {
+            // 디퓨즈 값을 계산한다.
+            diffuseIntensity = saturate(dot(input.worldNormal, input.lightDir2));
+
+            if(diffuseIntensity > 0.0f){
+                // 최종 색을 정한다.
+				color += (diffuseColor2 * diffuseIntensity);
+                // 최종 색이 너무 큰값이 되지 않도록 조정한다.
+				color = saturate(color);
+            }
+        }
+    }
+
+    // 디퓨즈 맵을 샘플링한다.
+    dfiffuseMapValue = shaderTexture.Sample(SampleTypeWrap, input.tex);
+
+	color = color * dfiffuseMapValue;
+
+    return color;
+}

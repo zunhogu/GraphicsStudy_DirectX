@@ -1,0 +1,192 @@
+#include "modelclass.h"
+
+ModelClass::ModelClass() {
+	m_vertexBuffer = 0; 
+	m_indexBuffer = 0; 
+} 
+
+ModelClass::ModelClass(const ModelClass& other) { } 
+
+ModelClass::~ModelClass() { }
+
+// Initialize 함수는 정점 버퍼와 인덱스 버퍼의 초기화 함수를 호출한다.
+bool ModelClass::Initialize(ID3D11Device* device) {
+	bool result;
+
+	// 정점 버퍼와 인덱스 버퍼를 초기화한다.
+	result = InitializeBuffers(device);
+	if (!result) {
+		return false;
+	}
+	return true;
+}
+
+// Shutdown 함수는 정점 버퍼와 인덱스 버퍼를 정리하는 함수를 호출한다.
+
+void ModelClass::Shutdown()
+{
+	// 정점 버퍼와 인덱스 버퍼를 해제합니다.
+	ShutdownBuffers();
+
+	return;
+}
+
+// Render 함수는 GraphicsClass::Render 함수에서 호출한다.
+// 이 함수에서는 RenderBuffers 함수를 호출하여 정점 버퍼와 인덱스 버퍼를 그래픽 파이프라인에 넣어 컬러 셰이더가 이들을 그릴 수 있도록 한다.
+void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+{
+	// 정점 버퍼와 인덱스 버퍼를 그래픽스 파이프라인에 넣어 화면에 그릴 준비를 한다.
+	RenderBuffers(deviceContext);
+
+	return;
+}
+
+// GetIndexCount 함수는 모델의 인덱스의 갯수를 알려준다.
+// 컬러셰이더에서는 모델을 그리기 위해서는 이 정보가 필요하다.
+int ModelClass::GetIndexCount() {
+	return m_indexCount;
+}
+
+bool ModelClass::InitializeBuffers(ID3D11Device* device) {
+
+	// 정점 배열을 만들어주고, 모델에 있는 정점들을 정점배열에 넣고, 정점배열들로 정점 버퍼를 만들어준다.
+
+	VertexType* vertices;   // 정점 배열
+	unsigned long* indices;  // 인덱스 배열
+	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData, indexData;
+	HRESULT result;
+
+	// 정점 배열의 길이를 설정한다.
+	m_vertexCount = 3;
+
+	// 인덱스 배열의 길이를 설정한다.
+	m_indexCount = 3;
+
+	// 정점 배열을 생성한다.
+	vertices = new VertexType[m_vertexCount];
+	if (!vertices) {
+		return false;
+	}
+
+	// 인덱스 배열을 생성한다.
+	indices = new unsigned long[m_indexCount];
+	if (!indices) {
+		return false;
+	}
+
+	// 정점 배열을 만들어주면 모델의 정점들을 배열에 넣어준다.
+	// 여기서 주의할 점은 시계 방향으로 정점 값을 넣어야한다. 만약 반시계 방향으로 만들면 DirectX에서 이 삼각형을 반대편을 바라본다고 판단한다.
+	// 이렇게 되면 레스터화기 단계에서 후면선별을 통해 그려지지 않게 된다.
+	// 따라서 GPU에게 도형을 그리도록 할때 이 순서를 기억하게 하는 것이 중요하다.
+
+	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);   // 왼쪽 아래 
+	vertices[0].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);   // 상단 가운데 
+	vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);   // 오른쪽 아래 
+	vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	// 인덱스 배열에도 정점 배열처럼 값을 넣어준다.
+	indices[0] = 0;   // 왼쪽아래
+	indices[1] = 1;   // 상단 간운데
+	indices[2] = 2;   // 오른쪽 아래
+
+
+	// 정점 배열과 인덱스 배열이 채워졌으므로 이것으로 정점 버퍼와 인덱스 버퍼를 만든다.
+	// 버퍼를 초기화 하기위해서는 버퍼의 구조체 서술이 필요하다.
+	// 그 다음은 버퍼의 초기화에 사용할 구조체 서술이 필요하다.
+
+	// 정점 버퍼 구조체 description
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;   // 정점버퍼가 쓰이는 용도 (현재는 GPU가 버퍼의 자원을 읽어야 하므로 이 용도로 지정)
+	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;   // 정점버퍼의 크기 
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;   // 정점버퍼의 경우 다음과 같은 플래그를 지정한다. 
+	vertexBufferDesc.CPUAccessFlags = 0;    // CPU가 플래그에 접근하는 방식을 지정한다.(버퍼 생성 이후 CPU가 버퍼에 접근하지 않으면 0으로 지정)
+	vertexBufferDesc.MiscFlags = 0;    // 정점버퍼에 대해서는 이 기타 플래그를 사용할 필요가 없다.
+	vertexBufferDesc.StructureByteStride = 0;   // 구조적 버퍼에 저장된 원소 구조적 버퍼 이외의 버퍼는 0으로 설정하면 된다. 
+
+	// 정점 데이터를 가리키는 보조 리소스 구조체를 서술한다.
+	vertexData.pSysMem = vertices;
+	vertexData.SysMemPitch = 0;
+	vertexData.SysMemSlicePitch = 0;
+
+	// 정점 버퍼를 생성한다.
+	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
+
+	// 인덱스 버퍼도 정점버퍼와 똑같은 과정으로 진행한다.
+
+	// 인덱스 버퍼 구조체를 서술한다.
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT; 
+	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount; 
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; 
+	indexBufferDesc.CPUAccessFlags = 0; 
+	indexBufferDesc.MiscFlags = 0; 
+	indexBufferDesc.StructureByteStride = 0;
+
+	// 인덱스 데이터를 가리키는 보조 리소스 구조체를 서술한다.
+	indexData.pSysMem = indices; 
+	indexData.SysMemPitch = 0; 
+	indexData.SysMemSlicePitch = 0;
+
+	// 인덱스 버퍼를 생성한다.
+	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// 정점 버퍼와 인덱스 버퍼를 만든 후에는 이미 값이 복사되었기 때문에 정점배열과 인덱스 배열을 제거한다.
+
+	delete[] vertices;
+	vertices = 0;
+
+	delete[] indices;
+	indices = 0;
+
+	return true;
+}
+
+// ShutdownBuffers 함수는 단순히 InitializeBuffers 함수에서 만들었던 정점버퍼와 인덱스버퍼를 초기화한다.
+void ModelClass::ShutdownBuffers() {
+	
+	// 인덱스 버퍼를 해제한다.
+	if (m_indexBuffer) {
+		m_indexBuffer->Release();
+		m_indexBuffer = 0;
+	}
+
+	// 정점 버퍼를 해제한다.
+	if (m_vertexBuffer) {
+		m_vertexBuffer->Release();
+		m_vertexBuffer = 0;
+	}
+	return;
+}
+
+// 입력 조립기단계
+void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext) {
+	unsigned int stride;
+	unsigned int offset;
+
+	// 정점 버퍼의 단위와 오프셋을 정한다.
+	stride = sizeof(VertexType);
+	offset = 0;
+
+	// input assembler에 정점 버퍼를 활성화여 그려질 수 있게 한다.
+	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+
+	// input assembler에 인덱스 버퍼를 활성화하여 그려질 수 있게 한다. 
+	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+
+	// 테셀레이션에서 이제 삼각형 목록대신 제어점 패치 목록을 그린다.
+	// 테셀레이션이 동작하려면 필수 수정사항이다.
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+
+	return;
+}

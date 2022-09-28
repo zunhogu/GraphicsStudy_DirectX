@@ -1,0 +1,50 @@
+// 유리 셰이더는 3개의 텍스처가 필요하다 유리 텍스처, 노말 텍스처, 굴절 텍스처 
+// register를 붙여준 이유는 HLSL 파일에 배치된 순서에 따라 어느 레지스터에 할당되는지 자동으로 결정하지 않고, 직접 할당할 수 있게 한다.
+Texture2D colorTexture : register(t0); 
+Texture2D normalTexture : register(t1); 
+Texture2D refractionTexture : register(t2);
+SamplerState SampleType;
+
+cbuffer GlassBuffer { 
+    float refractionScale; 
+    float3 padding; 
+};
+
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float4 refractionPosition : TEXCOORD1;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+    float2 refractTexCoord;
+    float4 normalMap; 
+    float3 normal;
+    float4 refractionColor; 
+    float4 textureColor;
+    float4 color;
+
+    // 굴절 텍스처에 매핑하기 위해서 굴절과 반사의 위치 (x,y)를 uv좌표로 바꿔준다.
+    refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.0f + 0.5f;
+    refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.0f + 0.5f;
+
+    // 노말맵을 샘플링한다.
+	normalMap = normalTexture.Sample(SampleType, input.tex);
+
+    // 샘플링한 노말값을 xy좌표 범위로 바꿔준다.
+	normal = (normalMap.xyz * 2.0f) - 1.0f;
+
+    // 계산한 노맑밧을 통해 굴절 텍스처의 uv좌표를 흩뜨려놓는다.
+	refractTexCoord = refractTexCoord + (normal.xy * refractionScale);
+
+    // 섭동이 적용된 좌푤르 가지고 굴절 텍스처를 샘플링한다.
+    refractionColor = refractionTexture.Sample(SampleType, refractTexCoord);
+
+    // 일반 텍스처 샘플링
+    textureColor = colorTexture.Sample(SampleType, input.tex);
+
+    // 선형보간으로 색상 텍스처와 굴절 텍스처를 혼합한다.
+    color = lerp(refractionColor, textureColor, 0.6f);
+
+	return color;
+}

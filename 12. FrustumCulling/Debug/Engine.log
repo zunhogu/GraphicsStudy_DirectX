@@ -1,0 +1,5 @@
+﻿  lightshaderclass.cpp
+c1xx : fatal error C1083: 소스 파일을 열 수 없습니다. '..\..\..\6_Parse\Engine\Engine\lightshaderclass.cpp': No such file or directory
+  frustumclass.cpp
+D:\workspace\Shader\MyDirectX\14_Frustum\Engine\Engine\frustumclass.cpp(98,11): warning C4101: 'vec' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...

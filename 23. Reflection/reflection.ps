@@ -1,0 +1,33 @@
+Texture2D shaderTexture;
+Texture2D reflectionTexture;
+SamplerState SampleType;
+
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float4 reflectionPosition : TEXCOORD1;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+    float4 textureColor; 
+    float2 reflectTexCoord; 
+    float4 reflectionColor;
+    float4 color;
+
+    // 기존의 텍스처를 샘플링한다.
+    textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+    // 현재 반사 텍스처의 위치 좌표(xy)를 알기 때문에 이를 이용해서 반사 텍스처에 투영될 uv 좌표를 계산한다.
+    // 아래의 공식은 w값으로 나누고 현재의 x 좌표는 -1~+1 사이의 값을 가지므로 0~1 의 uv좌표 범위로 매핑시키는 것이다. 
+    reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
+    reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
+
+    // 반사 텍스처를 샘플링한다.
+    reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
+
+    // 샘플링한 두 텍스처를 선형 보간을 하여 혼합 효과를 낸다.
+    color = lerp(textureColor, reflectionColor, 0.15f);
+
+    return color;
+
+}

@@ -1,0 +1,29 @@
+Texture2D shaderTextures[2];
+SamplerState SampleType;
+
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+
+float4 LightMapPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 color;
+    float4 lightColor;
+    float4 finalColor;
+
+    color = shaderTextures[0].Sample(SampleType, input.tex);
+
+    lightColor = shaderTextures[1].Sample(SampleType, input.tex);
+
+    // 매핑된 텍셀 값을 곱하여 혼합해주고 감마값도 곱해준다.(모니터의 감마값이 2.0에 가깝기 때문에)
+    finalColor = color * lightColor;
+
+    // 계산된 값을 0~1범위로 잘라준다.
+    finalColor = saturate(finalColor);
+
+    return finalColor;
+}

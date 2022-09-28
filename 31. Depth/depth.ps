@@ -1,0 +1,30 @@
+struct PS_INPUT{
+    float4 position : SV_POSITION;
+    float4 depthPosition : TEXTURE0;
+};
+
+float4 ps_main(PS_INPUT input) : SV_TARGET{
+	float depthValue;
+	float4 color;
+
+    // 정점셰이더에서 받아온 원근투영 위치 좌표의 z값은 깊이 값이다. 
+	/// 깊이값은 현재 원근투영에 의한 왜곡된 값을 가진다. 따라서 왜곡된 위치값을 바로잡아준다.
+	depthValue = input.depthPosition.z / input.depthPosition.w;
+
+    // 0.0f~0.9f이 깊이값은 빨간색으로 칡해준다. (깊이버퍼 10%)
+	if(depthValue < 0.9f){
+		color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    // 깊이 버퍼 0.025%
+	if(depthValue > 0.9f){
+		color = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	}
+
+    // 나머지 깊이 버퍼
+	if(depthValue > 0.925f){
+		color = float4(0.0, 0.0f, 1.0f, 1.0f);
+	}
+
+    return color;
+}
