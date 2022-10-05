@@ -1,0 +1,5 @@
+﻿  applicationclass.cpp
+D:\workspace\unity\Shader\MyDirectX\44_Terrain_ColorMapped\Engine\Engine\applicationclass.cpp(61,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\44_Terrain_ColorMapped\Engine\Engine\applicationclass.cpp(76,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\44_Terrain_ColorMapped\Engine\Engine\applicationclass.cpp(185,24): warning C4316: 'TextClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\44_Terrain_ColorMapped\Engine\Debug\Engine.exe

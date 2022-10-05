@@ -1,0 +1,28 @@
+﻿  applicationclass.cpp
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\applicationclass.cpp(64,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\applicationclass.cpp(79,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\applicationclass.cpp(188,24): warning C4316: 'TextClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\applicationclass.cpp(229,26): warning C4316: 'LightClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+  cameraclass.cpp
+  FrustumClass.cpp
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\FrustumClass.cpp(98,11): warning C4101: 'vec' :참조되지 않은 지역 변수입니다.
+  lightclass.cpp
+  QuadTreeClass.cpp
+  Terrainshaderclass.cpp
+  cpuclass.cpp
+  d3dclass.cpp
+  fontclass.cpp
+  fontshaderclass.cpp
+  fpsclass.cpp
+  inputclass.cpp
+  main.cpp
+  positionclass.cpp
+  systemclass.cpp
+  terrainclass.cpp
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\terrainclass.cpp(305,17): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  textclass.cpp
+  textureclass.cpp
+D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Engine\textureclass.cpp(21,10): warning C4101: 'result' :참조되지 않은 지역 변수입니다.
+  timerclass.cpp
+  코드를 생성하고 있습니다...
+  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\42_Terrain_QuardTree\Engine\Debug\Engine.exe
