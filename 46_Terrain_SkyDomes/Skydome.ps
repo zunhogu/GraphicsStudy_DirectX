@@ -1,0 +1,43 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: skydome.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+cbuffer GradientBuffer
+{
+    float4 apexColor;
+    float4 centerColor;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float4 domePosition : TEXCOORD0;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 SkyDomePixelShader(PixelInputType input) : SV_TARGET
+{
+    float height;
+    float4 outputColor;
+
+    // VS로 부터 받은 position의 y값과 버퍼로 부터 오는 상단의 색상값, 중심의 색상값 사이의 보간을 통해 skydome의 색상을 적용한다. 
+    height = input.domePosition.y;
+
+    if(height < 0.0)
+        height = 0.0f;
+
+    outputColor = lerp(centerColor, apexColor, height);
+
+    return outputColor;
+}
