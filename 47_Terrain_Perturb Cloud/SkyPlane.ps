@@ -1,0 +1,59 @@
+///////////////////////////////////////////////////////////////////////////////
+// Filename: skyplane.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+
+Texture2D cloudTexture : register(t0);
+Texture2D perturbTexture : register(t1);
+SamplerState SampleType;
+
+cbuffer SkyBuffer
+{
+    float translation;
+    float scale;
+    float brightness;
+    float padding;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 SkyPlanePixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 perturbValue;
+    float4 cloudColor;
+
+    // Translate the texture coordinate sampling location by the translation value.
+    input.tex.x = input.tex.x + translation;
+
+    // 노이즈 텍스처를 샘플링하여 해당 uv에 교란 값을 가져온다.
+    perturbValue = perturbTexture.Sample(SampleType, input.tex);
+
+    // 교란 값을 상수버퍼로 받아온 scale과 곱해준다.
+    perturbValue = perturbValue * scale;
+
+    // 교란된 텍스처의 uv 값을 얻기위해서 해당 값에 uv 좌표와 변환값을 추가해준다. 
+    perturbValue.xy = perturbValue.xy + input.tex.xy + translation;
+
+    // Now sample the color from the cloud texture using the perturbed sampling coordinates.
+    cloudColor = cloudTexture.Sample(SampleType, perturbValue.xy);
+
+    // Reduce the color cloud by the brightness value.
+    cloudColor = cloudColor * brightness;
+
+    return cloudColor;
+}
