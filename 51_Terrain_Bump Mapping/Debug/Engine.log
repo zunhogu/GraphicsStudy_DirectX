@@ -1,0 +1,6 @@
+﻿  applicationclass.cpp
+D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(59,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(74,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(168,24): warning C4316: 'TextClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(209,26): warning C4316: 'LightClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Debug\Engine.exe
