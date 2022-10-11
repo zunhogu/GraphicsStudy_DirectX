@@ -51,14 +51,14 @@ void TerrainShaderClass::Shutdown()
 
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-								XMMATRIX projectionMatrix, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection, ID3D11ShaderResourceView* colorTexture,
-								ID3D11ShaderResourceView* normalMapTexture)
+								XMMATRIX projectionMatrix, ID3D11ShaderResourceView* colorTexture, ID3D11ShaderResourceView* normalTexture,
+								XMFLOAT4 lightDiffuseColor, XMFLOAT3 lightDirection, float colorTextureBrightness)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, diffuseColor, lightDirection, colorTexture, normalMapTexture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor, lightDirection, colorTextureBrightness);
 	if (!result)
 	{
 		return false;
@@ -339,8 +339,8 @@ void TerrainShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND
 
 
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-											XMMATRIX projectionMatrix, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection,
-											ID3D11ShaderResourceView* colorTexture, ID3D11ShaderResourceView* normalMapTexture)
+											XMMATRIX projectionMatrix, ID3D11ShaderResourceView* colorTexture, ID3D11ShaderResourceView* normalTexture,
+											XMFLOAT4 lightDiffuseColor, XMFLOAT3 lightDirection, float colorTextureBrightness)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -389,9 +389,9 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	dataPtr2->diffuseColor = diffuseColor;
+	dataPtr2->lightDiffuseColor = lightDiffuseColor;
 	dataPtr2->lightDirection = lightDirection;
-	dataPtr2->padding = 0.0f;
+	dataPtr2->colorTextureBrightness = colorTextureBrightness;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -404,7 +404,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Set the texture resources in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &colorTexture);
-	deviceContext->PSSetShaderResources(1, 1, &normalMapTexture);
+	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
 
 	return true;
 }

@@ -10,11 +10,15 @@
 //////////////
 #include <d3d11.h>
 #include <DirectXMath.h>
-using namespace DirectX;
 #include <cstdio>
+using namespace DirectX;
 
+
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
 #include "textureclass.h"
-const int TEXTURE_REPEAT = 8;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: TerrainClass
@@ -26,6 +30,7 @@ private:
 	{
 		float x, y, z;
 		float nx, ny, nz;
+		float r, g, b;
 	};
 
 	struct VectorType
@@ -40,6 +45,7 @@ private:
 		float nx, ny, nz;
 		float tx, ty, tz;
 		float bx, by, bz;
+		float r, g, b;
 	};
 
 	struct TempVertexType
@@ -56,6 +62,7 @@ private:
 		XMFLOAT3 normal;
 		XMFLOAT3 tangent;
 		XMFLOAT3 binormal;
+		XMFLOAT4 color;
 	};
 
 public:
@@ -63,40 +70,38 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*, WCHAR*);
+	bool Initialize(ID3D11Device*, char*, char*, float, WCHAR*, WCHAR*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetColorTexture();
-	ID3D11ShaderResourceView* GetNormalMapTexture();
+	ID3D11ShaderResourceView* GetNormalTexture();
 
 private:
 	bool LoadHeightMap(char*);
-	void ShutdownHeightMap();
-	void ReduceHeightMap();
+	bool LoadColorMap(char*);
+	void ReduceHeightMap(float);
 	bool CalculateNormals();
-
-	bool BuildTerrainModel();
-	void ReleaseTerrainModel();
-
-	void CalculateTerrainVectors();
+	bool BuildModel();
+	void CalculateModelVectors();
 	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
-
 	bool InitializeBuffers(ID3D11Device*);
-	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
-
 	bool LoadTextures(ID3D11Device*, WCHAR*, WCHAR*);
+
+	void ReleaseHeightMap();
+	void ReleaseModel();
+	void ReleaseBuffers();
 	void ReleaseTextures();
 
+	void RenderBuffers(ID3D11DeviceContext*);
+
 private:
-	int m_terrainWidth, m_terrainHeight;
+	int m_terrainWidth, m_terrainHeight, m_vertexCount, m_indexCount;
 	HeightMapType* m_heightMap;
-	ModelType* m_TerrainModel;
-	int m_vertexCount, m_indexCount;
+	ModelType* m_model;
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
-	TextureClass* m_ColorTexture, * m_NormalMapTexture;
+	TextureClass* m_ColorTexture, * m_NormalTexture;
 };
 
 #endif

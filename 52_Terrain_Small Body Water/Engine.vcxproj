@@ -79,6 +79,12 @@
     <ClCompile Include="applicationclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
+    <ClCompile Include="Reflectionshaderclass.cpp" />
+    <ClCompile Include="rendertextureclass.cpp" />
+    <ClCompile Include="skydomeclass.cpp" />
+    <ClCompile Include="skydomeshaderclass.cpp" />
+    <ClCompile Include="skyplaneclass.cpp" />
+    <ClCompile Include="skyplaneshaderclass.cpp" />
     <ClCompile Include="Terrainshaderclass.cpp" />
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
@@ -93,11 +99,19 @@
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
+    <ClCompile Include="WaterClass.cpp" />
+    <ClCompile Include="Watershaderclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="lightclass.h" />
+    <ClInclude Include="Reflectionshaderclass.h" />
+    <ClInclude Include="rendertextureclass.h" />
+    <ClInclude Include="skydomeclass.h" />
+    <ClInclude Include="skydomeshaderclass.h" />
+    <ClInclude Include="skyplaneclass.h" />
+    <ClInclude Include="skyplaneshaderclass.h" />
     <ClInclude Include="Terrainshaderclass.h" />
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
@@ -111,11 +125,21 @@
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="timerclass.h" />
+    <ClInclude Include="WaterClass.h" />
+    <ClInclude Include="Watershaderclass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="font.ps" />
     <None Include="font.vs" />
+    <None Include="Reflection.ps" />
+    <None Include="Reflection.vs" />
+    <None Include="skydome.ps" />
+    <None Include="skydome.vs" />
+    <None Include="skyplane.ps" />
+    <None Include="skyplane.vs" />
     <None Include="terrain.vs" />
+    <None Include="water.ps" />
+    <None Include="water.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="terrain.ps" />

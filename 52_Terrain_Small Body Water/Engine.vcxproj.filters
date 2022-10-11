@@ -66,6 +66,30 @@
     <ClCompile Include="lightclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Reflectionshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Watershaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skydomeclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skydomeshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skyplaneclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skyplaneshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendertextureclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationclass.h">
@@ -116,6 +140,30 @@
     <ClInclude Include="lightclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Reflectionshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Watershaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skydomeclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skydomeshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skyplaneclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skyplaneshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendertextureclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="font.ps">
@@ -125,6 +173,30 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="terrain.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Reflection.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Reflection.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="water.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="water.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skydome.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skydome.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skyplane.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skyplane.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

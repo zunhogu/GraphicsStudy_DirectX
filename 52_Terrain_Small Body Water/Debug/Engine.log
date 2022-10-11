@@ -1,6 +1,18 @@
 ﻿  applicationclass.cpp
-D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(59,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
-D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(74,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
-D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(168,24): warning C4316: 'TextClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
-D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Engine\applicationclass.cpp(209,26): warning C4316: 'LightClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
-  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\51_Terrain_Bump Mapping\Engine\Debug\Engine.exe
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(67,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(111,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(123,26): warning C4316: 'LightClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(259,24): warning C4316: 'TextClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(282,46): warning C4316: 'RenderTextureClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Engine\applicationclass.cpp(297,46): warning C4316: 'RenderTextureClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  d3dclass.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  main.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  systemclass.cpp
+  코드를 생성하고 있습니다...
+  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\52_Terrain_Small Body Water\Engine\Debug\Engine.exe
