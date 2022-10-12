@@ -1,0 +1,127 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: terrain.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////
+// TEXTURES //
+//////////////
+
+// 사용할 텍스처
+Texture2D colorTexture1 : register(t0);
+Texture2D colorTexture2 : register(t1);
+Texture2D colorTexture3 : register(t2);
+Texture2D colorTexture4 : register(t3);
+
+// 빨강, 녹색, 파랑 채널에 텍스처 레이어 마스크가 포함된 단일 알파 텍스처를 사용한다. 
+Texture2D alphaTexture1 : register(t4);
+
+// 범프맵 계산을 적용하여 지형 텍스처의 개선을 위해 두개의 노멀 맵을 사용한다.
+Texture2D normalMap1 : register(t5);
+Texture2D normalMap2 : register(t6);
+
+
+//////////////
+// SAMPLERS //
+//////////////
+SamplerState SampleType;
+
+
+//////////////////////
+// CONSTANT BUFFERS //
+//////////////////////
+cbuffer LightBuffer
+{
+	float3 lightDirection;
+	float padding;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+   	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
+	float3 binormal : BINORMAL;
+    float2 tex2 : TEXCOORD1;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
+{
+	float3 lightDir;
+	float4 bumpMap;
+    float3 bumpNormal;
+    float lightIntensity1;
+    float lightIntensity2;
+	float4 textureColor1;
+	float4 textureColor2;
+	float4 textureColor3;
+	float4 textureColor4;
+	float4 alphaMap1;
+	float4 baseColor;
+	float4 color;
+
+	// 흙과 모래 텍스처는 매우 유사하기 때문에 단일 노말 맵을 공유할 수 있다.
+
+	// Invert the light direction for calculations.
+    lightDir = -lightDirection;
+
+	// Calculate the first bump map using the first normal map.
+	bumpMap = normalMap1.Sample(SampleType, input.tex);
+	bumpMap = (bumpMap * 2.0f) - 1.0f;
+	bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+	bumpNormal = normalize(bumpNormal);
+    lightIntensity1 = saturate(dot(bumpNormal, lightDir));
+
+	// 돌 경로에 대해서는 두번째 노말맵을 사용한다.
+
+	// Calculate the second bump map using the second normal map.
+	bumpMap = normalMap2.Sample(SampleType, input.tex);
+	bumpMap = (bumpMap * 2.0f) - 1.0f;
+	bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+	bumpNormal = normalize(bumpNormal);
+    lightIntensity2 = saturate(dot(bumpNormal, lightDir));
+
+    // Sample the color textures.
+    textureColor1 = colorTexture1.Sample(SampleType, input.tex);
+    textureColor2 = colorTexture2.Sample(SampleType, input.tex);
+    textureColor3 = colorTexture3.Sample(SampleType, input.tex);
+    textureColor4 = colorTexture4.Sample(SampleType, input.tex);
+
+	// Add the bump maps to their respective textures.
+    textureColor1 = saturate(lightIntensity1 * textureColor1);
+    textureColor2 = saturate(lightIntensity1 * textureColor2);
+    textureColor3 = saturate(lightIntensity1 * textureColor3);
+    textureColor4 = saturate(lightIntensity2 * textureColor4);
+
+
+	// 빨강, 녹색, 파랑 채널에 세 개의 텍스처 마스크 레이어가 포함된 알파 텍스처를 샘플링한다.
+	// 개별 쿼드 뿐만 아니라 전체 32x32 섹션에 매핑 되는 두번째 텍스처 좌표를 사용한다.
+    // Sample the alpha map using second set of texture coordinates.
+	alphaMap1 = alphaTexture1.Sample(SampleType, input.tex2);
+
+
+	// 첫번째 레이어에 대해 색을 설정한다. 해당 텍스처는 지형에 100% 덮여야한다. 
+	baseColor = textureColor1;
+
+	// 알파 맵의 채널별로 레이어들을 칠해나간다.
+
+	// 갈색 흙 텍스처와 알파맵의 빨간색 채널에서 가져온 텍스처 레이어 마스크를 사용하여 기본 레이어 위에 두번째 레이어를 추가한다.
+	color = lerp(baseColor, textureColor2, alphaMap1.r);
+
+	// 모래 텍스처와 알파맵의 녹색 채널에서 가져온 레이어 마스크를 사용하여 세번째 레이어에 추가한다.
+	color = lerp(color, textureColor3, alphaMap1.g);
+
+	// 돌 텍스처와 알파맵의 파랑 채널에서 가져온 레이어 마스크를 사용하여 네번째 레이어에 추가한다.
+	color = lerp(color, textureColor4, alphaMap1.b);
+	
+	return color;
+}
