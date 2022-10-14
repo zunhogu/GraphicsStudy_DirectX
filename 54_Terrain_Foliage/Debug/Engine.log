@@ -1,0 +1,7 @@
+﻿  applicationclass.cpp
+D:\workspace\unity\Shader\MyDirectX\54_Terrain_Foliage\Engine\Engine\applicationclass.cpp(53,27): warning C4316: 'D3DClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+D:\workspace\unity\Shader\MyDirectX\54_Terrain_Foliage\Engine\Engine\applicationclass.cpp(109,28): warning C4316: 'CameraClass': 힙에 할당된 개체가 16에 맞추어져 있지 않을 수도 있습니다
+  main.cpp
+  systemclass.cpp
+  코드를 생성하고 있습니다...
+  Engine.vcxproj -> D:\workspace\unity\Shader\MyDirectX\54_Terrain_Foliage\Engine\Debug\Engine.exe
